@@ -1,96 +1,30 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { google, facebook, apple, tringle } from "../ui/images";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { google, facebook, tringle } from "../ui/images";
+import { Link, useLocation} from "react-router-dom";
+import { LoginSocialFacebook } from "reactjs-social-login";
+import { LoginSocialGoogle } from "reactjs-social-login";
 import { useForm } from "react-hook-form";
-import { AuthContext } from "../context/AuthProvider";
-import toast, { Toaster } from 'react-hot-toast';
-import { FacebookAuthProvider, GoogleAuthProvider, sendPasswordResetEmail } from "firebase/auth";
+import { useEffect, useState } from "react";
 
+import axios from "axios"; 
 export default function Login() {
   const { pathname } = useLocation();
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { login, googleSignIn, facebookSignIn } = useContext(AuthContext)
-  const googleProvider = new GoogleAuthProvider()
-  const facebookProvider = new FacebookAuthProvider();
-  // const location = useLocation();
-  const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState('');
-  // const from = location.state?.from?.pathname || "/";
-
-  const handleLogin = (data, event) => {
-    login(data.email, data.password)
-      .then(result => {
-        const user = result.user;
-        console.log(user);
-        toast.success("Successfully logged in");
-        event.target.reset();
-        navigate('/')
-
-        // fetch(`https://nerd-academy-server.vercel.app/jwt?email=${data.email}`)
-        //     .then(res => res.json())
-        //     .then(data => {
-        //         if (data.accessToken) {
-        //             localStorage.setItem('accessToken', data.accessToken);
-        //         }
-        //     })
-        // navigate(from, { replace: true });
-      })
-      .catch(error => {
-        toast.error(error.message);
-      })
-  }
-
- // Google Sign In
- const handleSignInGoogle = () => {
-  googleSignIn(googleProvider)
-    .then(result => {
-      const user = result.user;
-      
-      toast.success("successfully logged in");
-      navigate('/');
-    })
-    .catch(error => {
-      toast.error(error.message);
-    })
-}
-// Facebook Sign In
-const handelFacebookSignIn = () => {
-  facebookSignIn(facebookProvider)
-      .then(result => {
-          const user = result.user
-          console.log(user);
-
-      })
-      .catch(error => {
-          console.log('Error', error);
-      })
-
-}
-
+  const [profile, setProfile] = useState(null);
+   const handleLogin = async (data) => {
+    console.log(data);
+    try {
+      const response = await axios.post("http://localhost:5000/login", data);
+      console.log(response.data)
+    } catch (error) {
+      console.log(error.response.data); 
+    }
+  };
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const handleEmailBlur = event =>{
-    const email = event.target.value;
-    setUserEmail(email);
-    console.log(email);
-  }
-
-  const handleForgetPassword = () =>{
-    if(!userEmail){
-      alert('Please enter your email address')
-    }
-    sendPasswordResetEmail(auth, userEmail)
-    .then( () =>{
-      alert("Please rest your Password and Check your email")
-    })
-    .catch( error =>{
-      console.error(console.error(error));
-    })
-  }
   return (
     <>
       <Navbar />
@@ -108,7 +42,7 @@ const handelFacebookSignIn = () => {
               </div>
               {/* Email */}
               <div className="email">
-                <input onBlur={handleEmailBlur}
+                <input
                   {...register("email", {
                     required: "email address is required",
                   })}
@@ -144,7 +78,7 @@ const handelFacebookSignIn = () => {
                 </div>
                 {/* Forget password */}
                 <div className="forgetpass">
-                  <a onClick={handleForgetPassword} href="#" className="underline font-thin ">
+                  <a href="#" className="underline font-thin ">
                     Forget Password
                   </a>
                 </div>
@@ -165,22 +99,55 @@ const handelFacebookSignIn = () => {
                   <h5>Or sign in with:</h5>
                 </div>
                 <div className="logos flex justify-center items-center gap-3">
-                  <a onClick={handleSignInGoogle} href="#" className="logo">
-                    <img
-                      className="w-10 sm:w-[2.8rem] md:w-[3.2rem]"
+
+                <LoginSocialGoogle
+        client_id={"745365490585-lt44d6gjua4rdgsoug4eod654rc1pofr.apps.googleusercontent.com"}
+        scope="openid profile email"
+        discoveryDocs="claims_supported"
+        access_type="offline"
+        onResolve={({ provider, data }) => {
+          console.log(provider, data);
+        }}
+        onReject={(err) => {
+          console.log(err);
+        }}
+      >
+           <a href="#" className="logo">
+                    <img  className="w-10 sm:w-[2.8rem] md:w-[3.2rem]"
                       src={google}
                       alt="google"
                     />
                   </a>
-                  <a onClick={handelFacebookSignIn}
-                  href="#" className="logo">
-                    <img
-                      className="w-10 sm:w-[2.8rem] md:w-[3.2rem]"
-                      src={facebook}
-                      alt="facebook"
-                    />
-                  </a>
-           
+      </LoginSocialGoogle>
+              
+                
+        {!profile ? (
+        <LoginSocialFacebook
+          appId="985753372452157"
+          onResolve={(response) => {
+            console.log(response);
+            setProfile(response.data);
+          }}
+          onReject={(error) => {
+            console.log(error);
+          }}
+        >
+         <a 
+                 href="#" className="logo">
+                    <img className="w-10 sm:w-[2.8rem] md:w-[3.2rem]" src={facebook} alt="facebook"/></a>
+        </LoginSocialFacebook>
+      ) : (
+        ""
+      )}
+
+      {profile ? (
+        <div>
+          <h1>{profile.name}</h1>
+          <img src={profile.picture.data.url} />
+        </div>
+      ) : (
+        ""
+      )}
                 </div>
               </div>
 
@@ -194,7 +161,7 @@ const handelFacebookSignIn = () => {
             </form>
           </div>
         </div>
-        {/* triangle */}
+        triangle
         <img
           className="triangle absolute -left-[25%] bottom-[30%]  w-[50rem] rotate-[80deg] opacity-[0.1] md:opacity-[0.25]"
           src={tringle}
@@ -210,7 +177,6 @@ const handelFacebookSignIn = () => {
       </section>
       
       <Footer />
-      <Toaster />
     </>
   );
 }

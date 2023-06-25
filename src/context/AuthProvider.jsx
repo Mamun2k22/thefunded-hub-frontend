@@ -1,83 +1,48 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth'
-import app from '../firebase/firebase.config';
+// import React, { createContext, useEffect, useState } from 'react';
+// // import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth'
 
-export const AuthContext = createContext();
-const auth = getAuth(app);
+// export const AuthContext = createContext();
+// const auth = getAuth(app);
 
 
-const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true)
-
-    const createUser = (email, password) => {
-        return createUserWithEmailAndPassword(auth, email, password);
-        setLoading(true);
+// const AuthProvider = ({ children }) => {
+//     const [user, setUser] = useState(null);
+//     const [loading, setLoading] = useState(true)
 
 
 
-    }
-    const login = (email, password) => {
-        // setLoading(true);// loading purpose
-        return signInWithEmailAndPassword(auth, email, password);
-    }
+//     const updateUser = (userInfo) => {
+//         return updateProfile(auth.currentUser, userInfo);
+//     }
+//     useEffect(() => {
+//         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+//             console.log(currentUser);
+//             setUser(currentUser);
+//             setLoading(false);
 
-    const logOut = () => {
-        return signOut(auth);
-    }
-
-    // Google
-    const googleSignIn = (googleProvider) => {
-        setLoading(true);
-        return signInWithPopup(auth, googleProvider)
-    }
-
-     // Facebook
-     const facebookSignIn = (facebookProvider) => {
-        setLoading(true);
-        return signInWithPopup(auth, facebookProvider )
-    }
+//         });
+//         return () => {
+//             unsubscribe();
+//         }
 
 
+//     }, [])
 
-    const updateUser = (userInfo) => {
-        return updateProfile(auth.currentUser, userInfo);
-    }
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            console.log(currentUser);
-            setUser(currentUser);
-            setLoading(false);
+//     const authInfo = {
+//         loading,
+//         user,
 
-        });
-        return () => {
-            unsubscribe();
-        }
+//     }
 
-
-    }, [])
-
-    const authInfo = {
-        loading,
-        user,
-        createUser,
-        login,
-        logOut,
-        googleSignIn,
-        updateUser,
-        facebookSignIn
-
-    }
-
-    return (
-        <div>
-            <AuthContext.Provider value={authInfo}>
-                {children}
-            </AuthContext.Provider>
+//     return (
+//         <div>
+//             <AuthContext.Provider value={authInfo}>
+//                 {children}
+//             </AuthContext.Provider>
 
 
-        </div>
-    );
-};
+//         </div>
+//     );
+// };
 
-export default AuthProvider;
+// export default AuthProvider;
