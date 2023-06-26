@@ -2,16 +2,13 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { google, facebook, tringle } from "../ui/images";
 import { Link, useLocation} from "react-router-dom";
-import { LoginSocialFacebook } from "reactjs-social-login";
-import { LoginSocialGoogle } from "reactjs-social-login";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios"; 
+
 export default function Login() {
   const { pathname } = useLocation();
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const [profile, setProfile] = useState(null);
    const handleLogin = async (data) => {
     console.log(data);
     try {
@@ -21,6 +18,22 @@ export default function Login() {
       console.log(error.response.data); 
     }
   };
+
+
+// Google log In
+useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/");
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -99,56 +112,14 @@ export default function Login() {
                   <h5>Or sign in with:</h5>
                 </div>
                 <div className="logos flex justify-center items-center gap-3">
-
-                <LoginSocialGoogle
-        client_id={"745365490585-lt44d6gjua4rdgsoug4eod654rc1pofr.apps.googleusercontent.com"}
-        scope="openid profile email"
-        discoveryDocs="claims_supported"
-        access_type="offline"
-        onResolve={({ provider, data }) => {
-          console.log(provider, data);
-        }}
-        onReject={(err) => {
-          console.log(err);
-        }}
-      >
-           <a href="#" className="logo">
-                    <img  className="w-10 sm:w-[2.8rem] md:w-[3.2rem]"
-                      src={google}
-                      alt="google"
-                    />
-                  </a>
-      </LoginSocialGoogle>
-              
-                
-        {!profile ? (
-        <LoginSocialFacebook
-          appId="985753372452157"
-          onResolve={(response) => {
-            console.log(response);
-            setProfile(response.data);
-          }}
-          onReject={(error) => {
-            console.log(error);
-          }}
-        >
-         <a 
-                 href="#" className="logo">
-                    <img className="w-10 sm:w-[2.8rem] md:w-[3.2rem]" src={facebook} alt="facebook"/></a>
-        </LoginSocialFacebook>
-      ) : (
-        ""
-      )}
-
-      {profile ? (
-        <div>
-          <h1>{profile.name}</h1>
-          <img src={profile.picture.data.url} />
-        </div>
-      ) : (
-        ""
-      )}
+             
+                    <a href="http://localhost:5000/auth/google" className="logo">
+                      <img className="w-10 sm:w-[2.8rem] md:w-[3.2rem]" src={google} alt="Google"/>
+                    </a>
+                   <a href="#" className="logo">
+                   <img className="w-10 sm:w-[2.8rem] md:w-[3.2rem]" src={facebook} alt="facebook"/></a>
                 </div>
+
               </div>
 
               {/* new */}
