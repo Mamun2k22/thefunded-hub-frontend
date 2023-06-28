@@ -1,26 +1,38 @@
 import Navbar from "../components/Navbar";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 import Footer from "../components/Footer";
 import { arrow, facebook, google, tringle } from "../ui/images";
 import { Link, useLocation,} from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Country } from "country-state-city";
-import { Toaster } from 'react-hot-toast';
 import { useEffect } from "react";
 const allCountry = Country.getAllCountries();
 
 export default function Registration() {
+  
   const { pathname } = useLocation();
-  const { register, handleSubmit, formState: { errors } } = useForm()
 
-  // Handel
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset // Add reset from useForm
+  } = useForm();
+
   const handleSignUp = async (data) => {
-    console.log(data);
     try {
       const response = await axios.post("http://localhost:5000/register", data);
-      console.log(response.data)
+      console.log(response.data);
+
+      // Display toast message
+      toast.success("Email sent to you for verification");
+
+      // Reset the form
+      reset(); // Reset the form after successful submission
     } catch (error) {
-      console.log(error.response.data); 
+      console.log(error.response.data);
     }
   };
 
@@ -257,6 +269,7 @@ export default function Registration() {
                 </div>
               </div>
             </form>
+            <ToastContainer position="top-center" autoClose={3000} hideProgressBar={true} />
           </div>
         </div>
         {/* triangle */}
@@ -279,9 +292,7 @@ export default function Registration() {
         />
       </section>
 
-      <Footer />
-      {/* <ToastContainer position="top-center" /> */}
-      <Toaster />
+      
     </>
   );
 };

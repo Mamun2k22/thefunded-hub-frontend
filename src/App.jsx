@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Registration from "./pages/Registration";
 import Dashboard from "./pages/Dashboard";
 import "./App.css";
+import EmailVerification from "./components/EmailVerified";
 
 function App() {
 
@@ -17,6 +18,15 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route
+          path="/verify/:token"
+          element={<EmailVerification/>}
+          loader={({ params }) =>
+            fetch(`http://localhost:5000/verify/${params.token}`).then(response =>
+              response.json()
+            )
+          }
+        />
           <Route path="/registration" element={<Registration />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>

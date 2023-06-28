@@ -8,17 +8,21 @@ import axios from "axios";
 
 export default function Login() {
   const { pathname } = useLocation();
-  const { register, handleSubmit, formState: { errors } } = useForm();
-   const handleLogin = async (data) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const handleLogin = async (data) => {
     console.log(data);
     try {
       const response = await axios.post("http://localhost:5000/login", data);
-      console.log(response.data)
+      console.log(response.data);
     } catch (error) {
-      console.log(error.response.data); 
+      console.log(error.response.data);
     }
   };
-
 
 // Google log In
 useEffect(() => {
